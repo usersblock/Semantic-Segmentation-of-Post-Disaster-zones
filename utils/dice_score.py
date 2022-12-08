@@ -29,7 +29,6 @@ def multiclass_dice_coeff(input: Tensor, target: Tensor, reduce_batch_first: boo
     dice = 0
     for channel in range(input.shape[1]):
         dice += dice_coeff(input[:, channel, ...], target[:, channel, ...], reduce_batch_first, epsilon)
-
     return dice / input.shape[1]
 
 
