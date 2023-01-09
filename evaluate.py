@@ -41,6 +41,11 @@ def evaluate(net, dataloader, device, ampbool,traintype = 'post'):
                         mask_pred = F.one_hot(mask_pred.argmax(dim=1), 5).permute(0,3, 1, 2).float()
                         # compute the Dice score, ignoring background
                         dice_score += multiclass_dice_coeff(mask_pred[:, 1:, ...], mask_true[:, 1:, ...], reduce_batch_first=False)
+                        dice_score_class[0] += dice_coeff(mask_pred[:, 0, ...], mask_true[:, 0, ...], reduce_batch_first=False)
+                        dice_score_class[1] += dice_coeff(mask_pred[:, 1, ...], mask_true[:, 1, ...], reduce_batch_first=False)
+                        dice_score_class[2] += dice_coeff(mask_pred[:, 2, ...], mask_true[:, 2, ...], reduce_batch_first=False)
+                        dice_score_class[3] += dice_coeff(mask_pred[:, 3, ...], mask_true[:, 3, ...], reduce_batch_first=False)
+                        dice_score_class[4] += dice_coeff(mask_pred[:, 4, ...], mask_true[:, 4, ...], reduce_batch_first=False)
                 pbar.update(postimage.shape[0])
                 pbar.set_postfix(**{'loss (batch)': loss.item()})
         if(traintype == 'post'):
@@ -73,4 +78,4 @@ def evaluate(net, dataloader, device, ampbool,traintype = 'post'):
     # Fixes a potential division by zero error
     if num_val_batches == 0:
         return [dice_score,dice_score_class,epoch_loss]
-    return [dice_score / num_val_batches,dice_score_class,epoch_loss]
+    return [dice_score / num_val_batches, [i/num_val_batches for i in dice_score_class],epoch_loss]
